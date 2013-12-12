@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Rapid Micro-Framework</title>
+
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-theme.css">
+    <link rel="stylesheet" href="/static/css/datepicker.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-select.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/ng-grid.min.css">
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/jquery.validate.min.js"></script>
+
+    <script src="/static/js/json2.js"></script>
+    <script src="/static/js/jstorage.js"></script>
+
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/js/angular.min.js"></script>
+    <script src="/static/js/ng-grid.min.js"></script>
+    <script src="/static/js/directives/angular-ui-utils.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.js"></script>
+    <script src="/static/js/bootstrap-multiselect.js"></script>
+    <script src="/static/js/bootstrap-select.js"></script>
+    <script src="/static/js/util.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script src="/static/js/controllers/main.js"></script>
+    <script src="/static/js/directives/directives.js"></script>
+    
+  </head>
+
+  <body ng-app="DoozerApp" ng-controller="MainCtrl">
+    
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-doozer-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-doozer-collapse">
+        <ul class="nav navbar-nav">
+          <li id="route-fields" class="dropdown">
+            <a id="route-fields-toggle" class="dropdown-toggle" data-toggle="dropdown" href="#" >
+              {{currentRoute.name}}
+              <b class="caret"></b>
+            </a>
+            <ul id="route-fields-menu" class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+              <li><a data-id="select">Select One</a></li>
+              <li ng-repeat="route in routes"><a data-id="select" ng-click="changeRoute($index)">{{route.name}}</a></li>
+            </ul>
+          </li>
+          <li><a id="form-toggle" ng-click="toggle=!toggle"><span class="glyphicon glyphicon-chevron-up" ng-class="{ 'glyphicon-chevron-down' : toggle } "></span></a></li>
+        </ul>
+        <form class="navbar-form col-xs-2" role="filter">
+          <div class="form-group">
+            <input id="filter" class="form-control" type="text" placeholder="Filter By" ng-model="filterOptions.filterText">
+          </div>
+        </form>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="vertical-divide" ng-hide="currentRoute.results.results"><p class="navbar-text">Nothing loaded</p></li>
+          <li class="vertical-divide" ng-show="currentRoute.results.results"><p class="navbar-text">Found {{currentRoute.results.results.length}} rows</p></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Export <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li ng-repeat="e in exports"><a data-id="select" ng-href="{{e.href}}" download="{{e.filename}}" ng-click="exportResults($index)">{{e.name}}</a></li>
+            </ul>
+          </li>
+        </ul>
+
+
+      </div><!-- /.navbar-collapse -->
+    </nav>
+
+    
+    <div class="container results-container">
+      <div class="row">
+        
+        <!-- FORM -->
+        <div class="form-wrapper" ng-class="{'col-md-4': !toggle, 'hide': toggle}">
+
+          <div id="form" class="form-container" data-spy="affix" data-offset-top="0">
+            <div ng-show="!currentRoute.form">
+              <p>Select a form from above</p>
+            </div>
+            <div id="form-container" ng-show="currentRoute.form">
+              <form class="form-horizontal" role="form">
+                <div class="form-group" ng-repeat="field in currentRoute.form.fields">
+                  <label for="{{field.id}}" class="col-lg-4 control-label" ng-show="field.text" ng-class="{ required: field.required, hide: !field.text.length }">{{field.text}}</label>
+                  <div ng-class="{ 'col-lg-12': !field.text.length, 'col-lg-6': field.text.length }" ng-switch on="field.type">
+                    <!-- Default (text) -->
+                    <input type="text" class="form-control" name="{{field.id}}" value="{{field.default}}" id="{{field.id}}" ng-switch-default ng-model="currentRoute.formData[field.id]" />
+
+                    <!-- p -->
+                    <p class="help-block" style="{{field.style}}" ng-switch-when="p">{{field.default}}</p>
+
+                    <!-- date -->
+                    <input type="text" class="form-control" id="{{field.id}}" ui-jq="datepicker" name="{{field.id}}" value="{{field.default}}" data-type="date" class="input-block-level" ng-switch-when="date" ng-model="currentRoute.formData[field.id]" ui-options="{'format': 'yyyy-mm-dd','autoclose': 'true'}"/>
+
+                    <!-- multiselect -->
+                    <select id="{{field.id}}" class="form-control" ui-jq="multiselect" name="{{field.id}}" multiple="multiple" data-type="multiselect" ng-switch-when="multiselect" ng-model="currentRoute.formData[field.id]">
+                      <option ng-repeat="option in field.options" ng-selected="option.selected" value="{{option.id}}">{{option.text}}</option>
+                    </select>
+
+                    <!-- select -->
+                    <select id="{{field.id}}" class="form-control" name="{{field.id}}" ng-switch-when="select" ng-model="currentRoute.formData[field.id]">
+                      <option ng-repeat="option in field.options" ng-selected="option.selected" value="{{option.id}}">{{option.text}}</option>
+                    </select>
+
+                    <!-- radio buttons -->
+                    <div ng-switch-when="radio">
+                      <div ng-repeat="radio in field.options">
+                        <input type="radio" id="{{radio.id}}" value="{{radio.id}}" name="radio" ng-checked="radio.selected" ng-model="currentRoute.formData[field.id]">
+                        <label type="radio" for="{{radio.id}}">{{radio.text}}</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-lg-offset-4 col-lg-6">
+                    <button class="btn btn-primary" type="submit" ng-click="submitForm()">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div class="progress progress-striped active hide" ng-class="{'hide': !loading}">
+              <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                <span class="sr-only">Unknown Complete</span>
+              </div>
+            </div>
+
+            <div id="status" class="alert" ng-show="currentAlert" ng-class="currentAlert.type">{{currentAlert.msg}}</div>
+
+          </div>
+        </div>
+
+
+        <div id="results" ng-class="{'col-md-12': toggle, 'col-md-8': !toggle}">
+          <div class="gridStyle" ng-grid="gridOptions" ng-show="myData">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div modal-show="showDialog" class="modal fade">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Export to e-mail</h3>
+        </div>
+        <div class="modal-body">
+          <label for="email">Email Address:</label>
+          <input name="email" id="email" type="text" ng-model="email">
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn btn-primary" ng-click="emailResults()">Send</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

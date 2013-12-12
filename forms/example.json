@@ -1,0 +1,107 @@
+{
+    "fields": [
+        {
+            "id": "name",
+            "text": "Name",
+            "required": true
+        },
+        {
+            "id": "rescode",
+            "text": "Response Code",
+            "default": "200"
+        },
+        {
+            "id": "rescodenotes",
+            "default": "If response code is 0, no results will be sent. If it is anything other than 200, the passed in response code will attempt to be used.",
+            "type": "p",
+            "style": "font-style: italic;"
+        },
+        {
+            "id": "sleep",
+            "text": "Sleep",
+            "default": 0
+        },
+        {
+            "id": "date",
+            "text": "Date",
+            "type": "date",
+            "default": null
+        },
+        {
+            "id": "count",
+            "text": "How many",
+            "default": 5
+        },
+        {
+            "id": "notes",
+            "text": "Notes",
+            "default": "Some brief notes about the endpoint.",
+            "type": "p",
+            "class": "alert alert-warn"
+        },
+        {
+            "id": "multiselect",
+            "text": "Multiselect",
+            "type": "multiselect",
+            "options": [
+                {
+                    "id": "option1",
+                    "text": "Option 1",
+                    "selected": false
+                },
+                {
+                    "id": "option2",
+                    "text": "Option 2",
+                    "selected": true
+                },
+                {
+                    "id": "option3",
+                    "text": "Option 3",
+                    "selected": true
+                }
+            ]
+        },
+        {
+            "id": "select",
+            "text": "Select",
+            "type": "select",
+            "options": [
+                {
+                    "id": "option1",
+                    "text": "Option 1"
+                },
+                {
+                    "id": "option2",
+                    "text": "Option 2"
+                },
+                {
+                    "id": "option3",
+                    "text": "Option 3",
+                    "selected": true
+                }
+            ]
+        },
+        {
+            "id": "radio",
+            "text": "Radio Buttons",
+            "type": "radio",
+            "options": [
+                {
+                    "id": "option1",
+                    "text": "Option 1",
+                    "selected": false
+                },
+                {
+                    "id": "option2",
+                    "text": "Option 2",
+                    "selected": true
+                },
+                {
+                    "id": "option3",
+                    "text": "Option 3",
+                    "selected": false
+                }
+            ]
+        }
+    ]
+}
