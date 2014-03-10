@@ -22,7 +22,7 @@ __init__ = ['register']
 _root = os.path.abspath(os.path.dirname(__file__))
 _main_path = os.path.abspath(os.path.dirname(__main__.__file__))
 
-LOG_LEVEL = 'debug'
+LOG_LEVEL = 'info'
 LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s %(message)s'
 LOG_DATE = '%Y-%m-%d %I:%M:%S %p'
 logging.basicConfig(format=LOG_FORMAT,
