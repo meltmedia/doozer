@@ -16,8 +16,11 @@ if sys.version_info <= (2, 4):
 
 
 def readme():
-    with open("readme.md") as f:
-        return f.read()
+    try:
+        with open("readme.md") as f:
+            return f.read()
+    except:
+        return ""
 
 setup(
     name="doozer",
